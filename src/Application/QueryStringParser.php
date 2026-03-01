@@ -25,7 +25,11 @@ class QueryStringParser {
 			if ( $this->isInstanceOfPart( $part ) ) {
 				$itemTypes = $this->extractItemTypes( $part, $itemTypes );
 			} elseif ( $this->isFacetPart( $part ) ) {
-				$constraints = $constraints->withConstraint( $this->handleFacetPart( $part, $constraints ) );
+				try {
+					$constraints = $constraints->withConstraint( $this->handleFacetPart( $part, $constraints ) );
+				} catch ( InvalidArgumentException ) {
+					// Skip malformed facet parts (e.g. invalid property IDs)
+				}
 			}
 			else {
 				$freeText[] = $part;

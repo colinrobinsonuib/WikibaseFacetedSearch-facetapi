@@ -30,6 +30,8 @@ class ConfigJsonValidator {
 
 		if ( $error !== null ) {
 			$this->errors = $this->formatErrors( $error );
+		} else {
+			$this->errors = [];
 		}
 
 		return $error === null;

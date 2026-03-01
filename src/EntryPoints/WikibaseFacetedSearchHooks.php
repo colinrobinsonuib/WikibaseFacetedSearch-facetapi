@@ -95,7 +95,10 @@ class WikibaseFacetedSearchHooks {
 		}
 
 		if ( $textMatches instanceof CirrusSearchResultSet ) {
-			self::setCurrentQuery( $textMatches->getElasticaResultSet()->getQuery()->getQuery() );
+			$elasticaResultSet = $textMatches->getElasticaResultSet();
+			if ( $elasticaResultSet !== null ) {
+				self::setCurrentQuery( $elasticaResultSet->getQuery()->getQuery() );
+			}
 		}
 	}
 
@@ -196,7 +199,7 @@ class WikibaseFacetedSearchHooks {
 	private static function getConfigPageHtml( string $html ): string {
 		$jsonTablePosition = strpos( $html, '<table class="mw-json">' );
 
-		if ( !$jsonTablePosition ) {
+		if ( $jsonTablePosition === false ) {
 			return $html;
 		}
 

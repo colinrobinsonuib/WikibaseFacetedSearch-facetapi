@@ -25,10 +25,7 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 			$this->getResult()->addValue( null, $this->getModuleName(), $facets );
 		} catch ( \Throwable $e ) {
 			$this->getResult()->addValue( null, 'error', [
-				'message' => $e->getMessage(),
-				'trace' => $e->getTraceAsString(),
-				'file' => $e->getFile(),
-				'line' => $e->getLine()
+				'message' => $e->getMessage()
 			] );
 		}
 	}
@@ -82,7 +79,6 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 		$labelLookup = $extension->getLabelLookup( $this->getLanguage() );
 		$formatter = $extension->getFacetValueFormatter( $this->getLanguage() );
 
-		$data = [];
 		foreach ( $facetConfigs as $facetConfig ) {
 			$data[] = $this->buildFacetData(
 				$facetConfig,

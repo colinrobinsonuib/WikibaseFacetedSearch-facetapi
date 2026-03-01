@@ -149,21 +149,27 @@ function onRangeFacetInput( facet, propertyId ) {
 
 	applyButton.disabled = false;
 
-	const clickOnEnter = ( event ) => {
-		if ( event.key === 'Enter' ) {
-			applyButton.click();
-		}
-	};
+	if ( !applyButton.dataset.listenersAdded ) {
+		applyButton.dataset.listenersAdded = 'true';
 
-	minInput.addEventListener( 'keydown', clickOnEnter );
-	maxInput.addEventListener( 'keydown', clickOnEnter );
+		const clickOnEnter = ( event ) => {
+			if ( event.key === 'Enter' ) {
+				applyButton.click();
+			}
+		};
 
-	applyButton.addEventListener( 'click', () => {
-		const newQueries = getRangeFacetQuerySegments( minInput.value, maxInput.value, propertyId );
-		submitSearchForm(
-			buildQueryString( specialSearchInput.value, newQueries, propertyId )
-		);
-	} );
+		minInput.addEventListener( 'keydown', clickOnEnter );
+		maxInput.addEventListener( 'keydown', clickOnEnter );
+
+		applyButton.addEventListener( 'click', () => {
+			const newQueries = getRangeFacetQuerySegments(
+				minInput.value, maxInput.value, propertyId
+			);
+			submitSearchForm(
+				buildQueryString( specialSearchInput.value, newQueries, propertyId )
+			);
+		} );
+	}
 }
 
 /**
