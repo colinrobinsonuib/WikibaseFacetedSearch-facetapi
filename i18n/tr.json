@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"HakanIST"
+		]
+	},
+	"wikibasefacetedsearch-description": "[[Special:Search]] sayfasını fasetli arama özellikleriyle geliştirir. Sonuçları örnek türü veya ifade değerlerine göre filtreleyin.",
+	"special-wikibase-faceted-search-config": "Fasetli arama yapılandırması",
+	"wikibase-faceted-search-config-invalid": "Değişiklikleriniz kaydedilmedi. Aşağıdaki {{PLURAL:$1|hatayı|hataları}} içeriyor:",
+	"wikibase-faceted-search-config-tab-name": "Sekme Başlığı",
+	"wikibase-faceted-search-config-tab-name-missing": "Sekme başlığı tanımlanmadı",
+	"wikibase-faceted-search-config-tab-name-create-title": "$1 için sekme başlığı oluştur",
+	"wikibase-faceted-search-config-tab-name-edit-title": "$1 için sekme başlığını düzenle",
+	"wikibase-faceted-search-config-help-documentation": "Düzenleme alanının altında [[#ConfigurationDocumentation|yapılandırma belgelerini görüntüleyebilirsiniz]].",
+	"wikibase-faceted-search-config-help-example": "Tam Örnek JSON",
+	"wikibase-faceted-search-instance-type-all": "Tümü",
+	"wikibase-faceted-search-filters": "Filtreler",
+	"wikibase-faceted-search-settings": "Yapılandır",
+	"wikibase-faceted-search-facet-all-selected-values": "Seçilen tüm değerler",
+	"wikibase-faceted-search-facet-any-selected-values": "Seçilen herhangi bir değer",
+	"wikibase-faceted-search-facet-any-value": "Herhangi bir değer",
+	"wikibase-faceted-search-facet-no-value": "Değer yok",
+	"wikibase-faceted-search-facet-apply": "Uygula",
+	"wikibase-faceted-search-facet-show-more": "Daha fazla göster",
+	"wikibase-faceted-search-facet-show-less": "Daha az göster",
+	"wikibase-faceted-search-facet-range-max": "Maksimum"
+}

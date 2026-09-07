@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"شاه زمان پټان"
+		]
+	},
+	"special-wikibase-faceted-search-config": "د اړخي لټون ترتيب",
+	"wikibase-faceted-search-config-help-documentation": "تاسو د [[#ConfigurationDocumentation|ترتيب لاسوند]] لاندې په سمون سيمه کې کتلی شئ.",
+	"wikibase-faceted-search-config-help-example": "د جی‌اېس‌او‌اېن بشپړه بېلگه",
+	"wikibase-faceted-search-instance-type-all": "ټول",
+	"wikibase-faceted-search-filters": "چاڼگرونه",
+	"wikibase-faceted-search-settings": "ترتيبول",
+	"wikibase-faceted-search-facet-all-selected-values": "ټول غوره‌شوي ارزښتونه",
+	"wikibase-faceted-search-facet-any-selected-values": "هر غوره‌شوی ارزښت",
+	"wikibase-faceted-search-facet-any-value": "هر ارزښت",
+	"wikibase-faceted-search-facet-no-value": "هېڅ ارزښت نشته",
+	"wikibase-faceted-search-facet-apply": "پلي‌کول",
+	"wikibase-faceted-search-facet-show-more": "نور ښودل",
+	"wikibase-faceted-search-facet-show-less": "لږ ښودل",
+	"wikibase-faceted-search-facet-range-min": "لږ تر لږه",
+	"wikibase-faceted-search-facet-range-max": "ډېر تر ډېره"
+}
