@@ -1,16 +1,19 @@
 <?php
 
-declare( strict_types=1 );
+declare( strict_types = 1 );
 
 namespace ProfessionalWiki\WikibaseFacetedSearch\EntryPoints;
 
 use ApiBase;
+use ApiUsageException;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use Elastica\Query\AbstractQuery;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
+use ProfessionalWiki\WikibaseFacetedSearch\Application\FacetType;
 use ProfessionalWiki\WikibaseFacetedSearch\Application\PropertyConstraints;
 use ProfessionalWiki\WikibaseFacetedSearch\WikibaseFacetedSearchExtension;
+use RuntimeException;
 
 class ApiWikibaseFacetedSearch extends ApiBase {
 
@@ -37,33 +40,46 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 			$facets = $this->getFacets( $term, $namespaces );
 
 			$this->getResult()->addValue( null, $this->getModuleName(), $facets );
+		} catch ( ApiUsageException $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
-			$this->getResult()->addValue( null, 'error', [
-				'message' => $e->getMessage(),
-				'trace' => $e->getTraceAsString(),
-				'file' => $e->getFile(),
-				'line' => $e->getLine()
-			] );
+			wfLogWarning( 'WikibaseFacetedSearch API: ' . $e->getMessage() );
+			$this->dieWithError( 'apierror-wbfs-search-failed', 'wbfs-search-failed' );
 		}
 	}
 
 	private function getFacets( string $term, ?array $namespaces ): array {
+		$extension = WikibaseFacetedSearchExtension::getInstance();
+		$queryStringParser = $extension->getQueryStringParser();
+		$parsedQuery = $queryStringParser->parse( $term );
+
+		$itemType = $parsedQuery->getItemTypes()[0] ?? null;
+		if ( !$itemType ) {
+			$this->dieWithError( 'apierror-wbfs-item-type-required', 'wbfs-item-type-required' );
+		}
+
+		$config = $extension->getConfig();
+		$facetConfigs = $config->getFacetConfigForItemType( $itemType );
+		if ( $facetConfigs === [] ) {
+			$this->dieWithError( 'apierror-wbfs-no-facets', 'wbfs-no-facets' );
+		}
+
 		$results = $this->runSearch( $term, $namespaces );
 
 		if ( $results instanceof Status ) {
 			if ( !$results->isOK() ) {
-				return [];
+				throw new RuntimeException( 'Search engine returned a failed status' );
 			}
 			$results = $results->getValue();
 		}
 
 		if ( !$results instanceof CirrusSearchResultSet ) {
-			return [];
+			throw new RuntimeException( 'Expected a CirrusSearch result set' );
 		}
 
 		$elasticaResultSet = $results->getElasticaResultSet();
 		if ( $elasticaResultSet === null ) {
-			return [];
+			throw new RuntimeException( 'Missing Elasticsearch result set' );
 		}
 		$query = $elasticaResultSet->getQuery()->getQuery();
 
@@ -79,19 +95,6 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 			};
 		}
 
-		$extension = WikibaseFacetedSearchExtension::getInstance();
-		$queryStringParser = $extension->getQueryStringParser();
-		$parsedQuery = $queryStringParser->parse( $term );
-
-		$itemType = $parsedQuery->getItemTypes()[0] ?? null;
-		if ( !$itemType ) {
-			return [];
-		}
-
-		$config = $extension->getConfig();
-		$facetConfigs = $config->getFacetConfigForItemType( $itemType );
-
-		$data = [];
 		$valueCounter = $extension->getValueCounter( $query );
 		$labelLookup = $extension->getLabelLookup( $this->getLanguage() );
 		$formatter = $extension->getFacetValueFormatter( $this->getLanguage() );
@@ -110,7 +113,7 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 		return $data;
 	}
 
-	private function runSearch( string $term, ?array $namespaces ) {
+	protected function runSearch( string $term, ?array $namespaces ) {
 		$searchEngine = MediaWikiServices::getInstance()->newSearchEngine();
 		$searchEngine->setLimitOffset( 1 );
 
@@ -131,18 +134,19 @@ class ApiWikibaseFacetedSearch extends ApiBase {
 		$constraints = $parsedQuery->getConstraintsForProperty( $facetConfig->propertyId )
 			?? new PropertyConstraints( $facetConfig->propertyId );
 
-		$counts = $valueCounter->countValues( $constraints );
+		$counts = $facetConfig->type === FacetType::LIST ? $valueCounter->countValues( $constraints ) : null;
 
 		$propertyId = $facetConfig->propertyId;
 		$propertySerialization = $propertyId->getSerialization();
 
 		$facetData = [
 			'property' => $propertySerialization,
+			'type' => $facetConfig->type->value,
 			'label' => $labelLookup->getLabel( $propertyId )?->getText() ?? $propertySerialization,
 			'values' => [],
 		];
 
-		foreach ( $counts->asArray() as $valCount ) {
+		foreach ( $counts?->asArray() ?? [] as $valCount ) {
 			$facetData['values'][] = [
 				'value' => $valCount->value,
 				'count' => $valCount->count,
